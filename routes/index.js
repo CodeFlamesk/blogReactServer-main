@@ -8,7 +8,7 @@ const commentRouter = require("./commentRouter");
 const feedbackRouter = require("./feedbackRouter");
 const askRouter = require("./askRouter");
 
-router.use("/category",  categoryRouter);
+router.use("/category", categoryRouter);
 router.use("/blog", blogRouter);
 router.use("/user", userRouter);
 router.use("/newsletter", newsletterRouter);

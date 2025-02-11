@@ -10,28 +10,28 @@ class CommentService {
 
             const date = await blogService.createDate();
 
-            const comment = await Comment.create({user: userId, rating, body, date, postId});
+            const comment = await Comment.create({ user: userId, rating, body, date, postId });
             await comment.save();
 
             await blogService.addComment(postId, comment._id);
 
             return comment;
-        } catch(e) {
+        } catch (e) {
             throw e
         }
     }
-    
+
     async delete(commentId, userId) {
 
-        try {   
-            await Comment.findById({_id:commentId});
+        try {
+            await Comment.findById({ _id: commentId });
 
             await blogService.deleteComment(commentId);
             await userService.deleteComment(userId, commentId);
-            
-            return res.json({message: "Вы удалили комментарий"});
 
-        } catch(e) {
+            return res.json({ message: "Вы удалили комментарий" });
+
+        } catch (e) {
             throw e;
         }
     }

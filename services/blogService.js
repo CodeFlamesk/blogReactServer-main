@@ -13,14 +13,14 @@ class BlogService {
             const fileName = uuid.v4() + ".webp";
             const filePath = path.join(req.pathStatic, fileName);
             await file.mv(filePath);
-            
+
             return fileName;
-        }catch(e) {
+        } catch (e) {
             console.log(e)
         }
     }
 
-    async createDate(){
+    async createDate() {
         try {
             const dates = new Date();
             function getMonthName(month) {
@@ -31,20 +31,20 @@ class BlogService {
 
                 return monthNames[month];
             }
-        
+
             return `${getMonthName(dates.getMonth())} ${dates.getDate()}, ${dates.getFullYear()}`;
-        }catch(e) {
+        } catch (e) {
             console.log(e)
         }
     }
 
     async createTimeReading(description) {
         try {
-            const {time} = await readingTime(description);
+            const { time } = await readingTime(description);
 
             return `${Math.ceil(time / 1000 / 60)} minutes`;
-            
-        }catch(e) {
+
+        } catch (e) {
             console.log(e)
         }
     }
@@ -53,40 +53,40 @@ class BlogService {
     async addComment(postId, commentId) {
         try {
 
-            const post = await Blog.findById({_id: postId});
+            const post = await Blog.findById({ _id: postId });
 
             await post.comments.push(commentId);
 
             const comments = post.comments;
 
             let sum = 0;
-            for(let i = 0; i <= comments.lenght; i++) {
-                const comment = await Comment.findById({_id: comments[i]._id});
+            for (let i = 0; i <= comments.lenght; i++) {
+                const comment = await Comment.findById({ _id: comments[i]._id });
                 sum += comment.rating;
-            } 
+            }
 
             post.rating = Math.ceil(sum / Object.keys(comments).length);
 
             post.save();
 
-        } catch(e) {
+        } catch (e) {
             throw e
         }
     }
 
     async deleteComment(id) {
         try {
-            const blog = await Blog.findOne({comments: id});
+            const blog = await Blog.findOne({ comments: id });
 
             if (!blog) {
-                throw  ApiError.BadRequest('Пост на который ссылается данный комментарий,  не был найден!')
-            } 
+                throw ApiError.BadRequest('Пост на который ссылается данный комментарий,  не был найден!')
+            }
 
             blog.comments = await blog.comments.filter(item => item._id !== id);
 
-            await blog.save(); 
+            await blog.save();
 
-        } catch(e) {
+        } catch (e) {
             throw e
         }
     }

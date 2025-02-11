@@ -1,5 +1,5 @@
 const Ask = require("../models/Ask");
-const User = require("../models/User"); 
+const User = require("../models/User");
 const blogService = require("../services/blogService");
 
 

@@ -5,10 +5,10 @@ const blogService = require("../services/blogService")
 class FeedbackController {
     async sendFeedback(req, res) {
         try {
-            const {lastName, firstName, email, message, tel} = req.body;
+            const { lastName, firstName, email, message, tel } = req.body;
 
             const date = await blogService.createDate();
-            
+
             const feedback = await Feedback.create({
                 lastName,
                 firstName,
@@ -19,9 +19,9 @@ class FeedbackController {
             })
 
             await feedback.save();
-            
-            return res.json({message:"Thanks for your feedback"});
-        } catch(e) {
+
+            return res.json({ message: "Thanks for your feedback" });
+        } catch (e) {
             console.log(e)
         }
     }
