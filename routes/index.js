@@ -17,6 +17,6 @@ router.use("/newsletter", newsletterRouter);
 router.use("/comments", commentRouter);
 router.use("/feedback", feedbackRouter);
 router.use("/ask", askRouter);
-router.use("/game", gameRouter); // Додаємо сюди, а не в головний index.js
+router.use("/games", gameRouter); // Додаємо сюди, а не в головний index.js
 
 module.exports = router;
