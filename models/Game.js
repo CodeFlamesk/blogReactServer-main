@@ -6,7 +6,7 @@ const gameSchema = new Schema({
     name: { type: String, required: true },
     map: { type: String, required: true },
     about: { type: String, required: true },
-
+    gameImages: [{ type: String }],
     roles: [
         {
             role: { type: String, },

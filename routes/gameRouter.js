@@ -25,6 +25,6 @@ router.get("/:id", (req, res) => {
 });
 
 // Створити нову гру
-router.post("/", upload.single('gameImage'), createGame)
+router.post("/", upload.array("gameImages", 2), createGame);
 
 module.exports = router;

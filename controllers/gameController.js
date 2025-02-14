@@ -18,7 +18,7 @@ const createGame = async (req, res) => {
 
         const roles = req.body.roles ? JSON.parse(req.body.roles) : [];
         const team = req.body.team ? JSON.parse(req.body.team) : [];
-
+        const gameImages = req.files.map(file => `${API_URL}/static/${file.filename}`);
         const game = await Game.create({
             type,
             date,
@@ -26,7 +26,8 @@ const createGame = async (req, res) => {
             map,
             about,
             roles,
-            team
+            team,
+            gameImages,
         });
 
         res.status(200).json(game);
