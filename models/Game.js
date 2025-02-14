@@ -6,17 +6,17 @@ const gameSchema = new Schema({
     name: { type: String, required: true },
     map: { type: String, required: true },
     about: { type: String, required: true },
-    images: [{ type: String }],
+
     roles: [
         {
-            role: { type: String, required: true },
-            user: { type: String, required: true },
+            role: { type: String, },
+            user: { type: String, },
         },
     ],
     team: [
         {
-            team: { type: String, required: true },
-            user: { type: String, required: true },
+            team: { type: String, },
+            user: { type: String, },
         },
     ],
 }, { timestamps: true });

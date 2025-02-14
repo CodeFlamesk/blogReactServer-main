@@ -8,7 +8,7 @@ const newsletterRouter = require("./newsletterRouter");
 const commentRouter = require("./commentRouter");
 const feedbackRouter = require("./feedbackRouter");
 const askRouter = require("./askRouter");
-const gameRouter = require("./gameRouter"); // Правильний шлях
+const gameRouter = require("./gameRouter");
 
 router.use("/category", categoryRouter);
 router.use("/blog", blogRouter);
@@ -17,6 +17,6 @@ router.use("/newsletter", newsletterRouter);
 router.use("/comments", commentRouter);
 router.use("/feedback", feedbackRouter);
 router.use("/ask", askRouter);
-router.use("/games", gameRouter); // Додаємо сюди, а не в головний index.js
+router.use("/games", gameRouter);
 
 module.exports = router;

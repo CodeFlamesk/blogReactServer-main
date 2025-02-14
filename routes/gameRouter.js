@@ -1,17 +1,20 @@
 const express = require("express");
-const { getGames } = require('../controllers/gameController')
+const { getGames, createGame } = require('../controllers/gameController')
 const router = express.Router();
-/* const multer = require('multer');
+const multer = require('multer');
 
+const path = require("path");
 const storage = multer.diskStorage({
-    destination: './assets/',
+    destination: './static/',
     filename: (req, file, cb) => {
-        cb(null, file.filename + '-' + Date.now() + path.extname(file.originalname))
+        cb(null, Date.now() + path.extname(file.originalname));
     }
-}); */
+});
 
-/* const upload = multer({ storage });
- */
+
+
+const upload = multer({ storage });
+
 // Отримати всі ігри
 router.get("/", getGames);
 
@@ -22,8 +25,6 @@ router.get("/:id", (req, res) => {
 });
 
 // Створити нову гру
-router.post("/", (req, res) => {
-    res.send("Create game");
-});
+router.post("/", upload.single('gameImage'), createGame)
 
 module.exports = router;
