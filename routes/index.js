@@ -9,8 +9,11 @@ const commentRouter = require("./commentRouter");
 const feedbackRouter = require("./feedbackRouter");
 const askRouter = require("./askRouter");
 const gameRouter = require("./gameRouter");
-const roleRouter = require("./roleRouter"); // 🔹 Додаємо роут для ролей
-const teamRouter = require("./teamRouter")
+const teamRouter = require("./teamRouter");
+const roleRouter = require("./roleRouter");
+
+router.use("/roles", roleRouter);
+
 router.use("/category", categoryRouter);
 router.use("/blog", blogRouter);
 router.use("/user", userRouter);
