@@ -1,6 +1,7 @@
-const { Schema, model, ObjectId } = require("mongoose")
+const mongoose = require("mongoose");
 
-const teamroleSchema = new Schema({
-    gamerole: { type: String, required: true }
-})
-module.exports = model("TeamRole", teamroleSchema);
+const TeamRole = new mongoose.Schema({
+    gameRole: { type: String, required: true },
+});
+
+module.exports = mongoose.model("TeamRole", TeamRole);

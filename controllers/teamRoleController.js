@@ -1,29 +1,35 @@
-const { validationResult } = require("express-validator");
-const ApiError = require("../exceptions/apiError");
-const teamRoleService = require("../services/teamRoleService");
+const TeamRoleService = require("../services/teamRoleService");
 
 class TeamRoleController {
-    async createRole(req, res, next) {
+    async add(req, res) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return next(ApiError.BadRequest(errors.array()[0].msg));
-            }
-
-            const { gamerole } = req.body;
-            const newRole = await teamRoleService.createRole(gamerole);
-            return res.status(201).json(newRole);
+            const { gameRole } = req.body;
+            const role = await TeamRoleService.add(gameRole);
+            res.status(201).json(role);
         } catch (e) {
-            next(e);
+            res.status(500).json({ message: e.message });
         }
     }
 
-    async getRoles(req, res, next) {
+    async getAll(req, res) {
         try {
-            const roles = await teamRoleService.getAllRoles();
-            return res.json(roles);
+            const roles = await TeamRoleService.getAll();
+            res.json(roles);
         } catch (e) {
-            next(e);
+            res.status(500).json({ message: e.message });
+        }
+    }
+
+    async getById(req, res) {
+        try {
+            const { id } = req.params;
+            const role = await TeamRoleService.getById(id);
+            if (!role) {
+                return res.status(404).json({ message: "Роль не знайдено" });
+            }
+            res.json(role);
+        } catch (e) {
+            res.status(500).json({ message: e.message });
         }
     }
 }

@@ -1,6 +1,6 @@
 const Game = require("../models/Game");
 const Role = require("../models/Role");
-const Team = require("../models/Team");
+const Team = require("../models/TeamRole");
 const User = require("../models/User");
 const API_URL = process.env.API_URL || "http://localhost:5000";
 

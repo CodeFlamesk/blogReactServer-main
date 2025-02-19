@@ -1,4 +1,5 @@
-const { Schema, model, ObjectId } = require("mongoose")
+const { Schema, model, ObjectId } = require("mongoose");
+
 const gameSchema = new Schema({
     type: { type: String, required: true },
     date: { type: String, required: true },
@@ -10,4 +11,3 @@ const gameSchema = new Schema({
 }, { timestamps: true });
 
 module.exports = model("Game", gameSchema);
-

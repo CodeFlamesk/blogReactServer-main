@@ -1,3 +1,4 @@
+const corsMiddleware = require("./middleware/cors.middleware");
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -6,7 +7,6 @@ const app = express();
 const router = require("./routes/index"); // Правильний шлях до маршрутизації
 /* const fileUpload = require("express-fileupload"); */
 const fileMiddleware = require("./middleware/filePath.middleware");
-const corsMiddleware = require("./middleware/cors.middleware");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const errorMiddleware = require("./middleware/error.middleware");
