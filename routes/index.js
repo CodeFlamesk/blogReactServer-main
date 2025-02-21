@@ -10,8 +10,7 @@ const feedbackRouter = require("./feedbackRouter");
 const askRouter = require("./askRouter");
 const gameRouter = require("./gameRouter");
 const teamRoleRouter = require("./teamRoleRouter");
-
-
+const teamRouter = require("./teamRouter");
 
 router.use("/category", categoryRouter);
 router.use("/blog", blogRouter);
@@ -21,6 +20,7 @@ router.use("/comments", commentRouter);
 router.use("/feedback", feedbackRouter);
 router.use("/ask", askRouter);
 router.use("/games", gameRouter);
-router.use('/team-role', teamRoleRouter);
+router.use("/team-role", teamRoleRouter);
+router.use("/teams", teamRouter);
 
 module.exports = router;

@@ -1,10 +1,23 @@
-const Router = require("express");
-const router = new Router();
-const TeamRoleController = require("../controllers/teamRoleController");
-const { body, param } = require("express-validator");
+const express = require("express");
+const router = express.Router();
+const TeamRole = require("../models/TeamRole");
 
-router.post("/", body("gameRole").isString().notEmpty(), TeamRoleController.add);
-router.get("/", TeamRoleController.getAll);
-router.get("/:id", param("id").isMongoId(), TeamRoleController.getById);
+// Створення нової ролі для команди
+router.post("/", async (req, res) => {
+    const { role, user, teamId } = req.body; // teamId можна використати для логіки, якщо потрібно
+
+    try {
+        // Створюємо новий документ з gameRole, який містить передані role та user
+        const newTeamRole = new TeamRole({
+            gameRole: [{ role, user }]
+        });
+
+        const savedTeamRole = await newTeamRole.save();
+        res.status(201).json(savedTeamRole);
+    } catch (error) {
+        console.error("Помилка при створенні ролі:", error);
+        res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router;
