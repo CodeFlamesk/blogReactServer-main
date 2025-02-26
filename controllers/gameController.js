@@ -16,52 +16,13 @@ const getGames = async (req, res) => {
 
 const createGame = async (req, res) => {
     try {
-        const { type, date, name, map, about, roles, teams, players } = req.body;
+        const { type, date, name, map, about } = req.body;
 
         if (!type || !date || !name || !map || !about) {
             return res.status(400).json({ message: "Не всі обов'язкові поля заповнені" });
         }
 
-        const gameImages = req.files ? req.files.map(file => `${API_URL}/static/${file.filename}`) : [];
-
-        // Перетворюємо roles, teams та players на ObjectId
-        const parsedRoles = roles ? JSON.parse(roles) : [];
-        const roleIds = await Promise.all(parsedRoles.map(async (role) => {
-            try {
-                const roleDoc = await Role.findOne({ name: role.role });
-                if (!roleDoc) throw new Error(`Роль ${role.role} не знайдена`);
-                const userDoc = await User.findById(role.user);
-                if (!userDoc) throw new Error(`Користувач з id ${role.user} не знайдений`);
-                return { role: roleDoc._id, user: userDoc._id };
-            } catch (err) {
-                console.error(`Помилка при обробці ролей: ${err.message}`);
-                throw err;
-            }
-        }));
-
-        const teamIds = teams ? JSON.parse(teams) : [];
-        const teamsDocs = await Promise.all(teamIds.map(async (team) => {
-            try {
-                const teamDoc = await Team.findById(team);
-                if (!teamDoc) throw new Error(`Команда з id ${team} не знайдена`);
-                return teamDoc._id;
-            } catch (err) {
-                console.error(`Помилка при обробці команд: ${err.message}`);
-                throw err;
-            }
-        }));
-
-        const playerIds = players ? JSON.parse(players) : [];
-        const playersDocs = await Promise.all(playerIds.map(async (player) => {
-            try {
-                const userDoc = await User.findById(player);
-                if (!userDoc) throw new Error(`Користувач з id ${player} не знайдений`);
-                return userDoc._id;
-            } catch (err) {
-                console.error(`Помилка при обробці користувачів: ${err.message}`);
-                throw err;
-            }
-        }));
+        const gameImages = req.files && Array.isArray(req.files) ? req.files.map(file => `${API_URL}/static/${file.filename}`) : [];
 
         // Створюємо новий запис гри
         const game = new Game({
@@ -70,9 +31,6 @@ const createGame = async (req, res) => {
             name,
             map,
             about,
-            roles: roleIds,
-            teams: teamsDocs,
-            players: playersDocs,
             gameImages,
         });
 
@@ -80,12 +38,30 @@ const createGame = async (req, res) => {
         res.status(201).json(game);
     } catch (error) {
         console.error("Помилка при створенні гри:", error);
-        res.status(500).json({ message: "Не вдалося створити гру, повторіть спробу", error: error.message });
+        res.status(500).json({ message: "Не вдалося створити гру, повторіть спробу" });
     }
 };
 
 
+
+const getGameIdByParams = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const game = await Game.findById(id).select("_id");
+
+        if (!game) {
+            return res.status(404).json({ message: "Гра не знайдена" });
+        }
+
+        res.status(200).json({ _id: game._id });
+    } catch (error) {
+        console.error("Помилка при отриманні ID гри:", error);
+        res.status(500).json({ message: "Не вдалося отримати ID гри" });
+    }
+};
+
 module.exports = {
     getGames,
     createGame,
+    getGameIdByParams,
 };

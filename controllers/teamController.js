@@ -10,7 +10,15 @@ class TeamController {
             next(e);
         }
     }
-
+    async getGameIdByTeamId(req, res, next) {
+        try {
+            const { teamId } = req.params;
+            const result = await TeamService.getGameIdByTeamId(teamId);
+            return res.json(result);
+        } catch (e) {
+            next(e);
+        }
+    }
     async getAll(req, res, next) {
         try {
             const teams = await TeamService.getAll();
@@ -30,16 +38,7 @@ class TeamController {
         }
     }
 
-    async update(req, res, next) {
-        try {
-            const { id } = req.params;
-            const data = req.body;
-            const updatedTeam = await TeamService.update(id, data);
-            return res.json(updatedTeam);
-        } catch (e) {
-            next(e);
-        }
-    }
+
 
     async delete(req, res, next) {
         try {

@@ -14,6 +14,21 @@ class TeamService {
         }
     }
 
+    async getGameIdByTeamId(teamId) {
+        if (!teamId) {
+            throw ApiError.BadRequest("ID команди не передано");
+        }
+        try {
+            const team = await Team.findById(teamId).select("game");
+            if (!team || !team.game) {
+                throw ApiError.BadRequest("Гра для цієї команди не знайдена");
+            }
+            return { gameId: team.game };
+        } catch (e) {
+            throw ApiError.BadRequest("Помилка при отриманні ID гри: " + e.message);
+        }
+    }
+
     async getAll() {
         try {
             return await Team.find().populate("players game");
@@ -37,20 +52,7 @@ class TeamService {
         }
     }
 
-    async update(id, data) {
-        if (!id) {
-            throw ApiError.BadRequest("ID не передано");
-        }
-        try {
-            const updatedTeam = await Team.findByIdAndUpdate(id, data, { new: true }).populate("players game");
-            if (!updatedTeam) {
-                throw ApiError.BadRequest("Команду не знайдено");
-            }
-            return updatedTeam;
-        } catch (e) {
-            throw ApiError.BadRequest("Помилка при оновленні команди: " + e.message);
-        }
-    }
+
 
     async remove(id) {
         if (!id) {

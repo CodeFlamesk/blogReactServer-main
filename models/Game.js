@@ -7,6 +7,7 @@ const gameSchema = new Schema({
     map: { type: String, required: true },
     about: { type: String, required: true },
     gameImages: [{ type: String }],
+    teams: [{ type: ObjectId, ref: "Team" }],
     votes: { type: ObjectId, ref: "Votes", default: null }
 }, { timestamps: true });
 
