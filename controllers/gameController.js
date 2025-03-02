@@ -1,15 +1,14 @@
 const Game = require("../models/Game");
-const Role = require("../models/Role");
-const Team = require("../models/TeamRole");
-const User = require("../models/User");
+const { ObjectId } = require("mongoose").Types;
 const API_URL = process.env.API_URL || "http://localhost:5000";
 
 const getGames = async (req, res) => {
     try {
         const games = await Game.find().populate("roles.role players teams");
+        console.log("🔍 Отримані ігри:", games); // Логування результату
         res.status(200).json(games);
     } catch (error) {
-        console.error("Помилка при отриманні ігор:", error);
+        console.error("❌ Помилка при отриманні ігор:", error);
         res.status(500).json({ message: "Не вдалося отримати список ігор, повторіть спробу" });
     }
 };
@@ -22,9 +21,8 @@ const createGame = async (req, res) => {
             return res.status(400).json({ message: "Не всі обов'язкові поля заповнені" });
         }
 
-        const gameImages = req.files && Array.isArray(req.files) ? req.files.map(file => `${API_URL}/static/${file.filename}`) : [];
+        const gameImages = req.files?.map(file => `${API_URL}/static/${file.filename}`) || [];
 
-        // Створюємо новий запис гри
         const game = new Game({
             type,
             date,
@@ -42,13 +40,15 @@ const createGame = async (req, res) => {
     }
 };
 
-
-
 const getGameIdByParams = async (req, res) => {
     try {
         const { id } = req.params;
-        const game = await Game.findById(id).select("_id");
 
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Невірний формат ID гри" });
+        }
+
+        const game = await Game.findById(id).select("_id");
         if (!game) {
             return res.status(404).json({ message: "Гра не знайдена" });
         }
