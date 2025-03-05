@@ -15,31 +15,31 @@ const serviceAll = require("./serviceAll");
 class UserService {
 
     async registration(req, email, password, name, surname) {
-        const candidate = await User.findOne({email});
-        if(candidate) {
-            throw  ApiError.BadRequest(`Пользователь с таким ${email} уже существует`);
+        const candidate = await User.findOne({ email });
+        if (candidate) {
+            throw ApiError.BadRequest(`Пользователь с таким ${email} уже существует`);
         }
 
         const hashPassword = await bcrypt.hash(password, 3);
         const activationLink = uuid.v4();
 
-        const user = await User.create({email, password: hashPassword, activationLink, name, surname});
+        const user = await User.create({ email, password: hashPassword, activationLink, name, surname });
 
         await MailService.sendActivationMail(req, email, name, surname, `${process.env.API_URL}/api/user/activate/${activationLink}`);
 
         const userDto = new UserDto(user);
 
-        const tokens = tokenService.generateTokens({...userDto});
+        const tokens = tokenService.generateTokens({ ...userDto });
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
         return { ...tokens, user: userDto }
     }
 
     async activate(activationLink) {
-        const user = await User.findOne({activationLink});
+        const user = await User.findOne({ activationLink });
 
-        if(!user) {
-            throw  ApiError.BadRequest("Неккоректная ссылка активации")
+        if (!user) {
+            throw ApiError.BadRequest("Неккоректная ссылка активации")
         }
         user.isActivated = true;
         await user.save();
@@ -47,27 +47,27 @@ class UserService {
 
     async login(email, password) {
         try {
-            const user = await User.findOne({email});
-            if(!user) {
-                throw  ApiError.BadRequest('Пользователь не был найден, проверьте правильность ввода вашего email')
+            const user = await User.findOne({ email });
+            if (!user) {
+                throw ApiError.BadRequest('Пользователь не был найден, проверьте правильность ввода вашего email')
             }
 
             const isPassEquals = await bcrypt.compare(password, user.password);
-            
-            if(!isPassEquals) {
-                if(user) {
+
+            if (!isPassEquals) {
+                if (user) {
                     console.log(user)
                     throw ApiError.BadRequest("Неккоректный пароль, попробуйте еще раз.")
                 }
             }
 
             const userDto = new UserDto(user);
-            const tokens = tokenService.generateTokens({...userDto});
-            
+            const tokens = tokenService.generateTokens({ ...userDto });
+
             await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
             return { ...tokens, user: userDto }
-        } catch(e) {
+        } catch (e) {
             throw e
         }
     }
@@ -78,20 +78,20 @@ class UserService {
     }
 
     async refresh(refreshToken) {
-        if(!refreshToken)  {
+        if (!refreshToken) {
             throw ApiError.UnathorizedError();
         }
 
         const userData = tokenService.validateRefreshToken(refreshToken);
         const tokenFromDb = await tokenService.findToken(refreshToken);
-        if(!userData || !tokenFromDb) {
+        if (!userData || !tokenFromDb) {
             throw ApiError.UnathorizedError();
         }
 
         const user = await User.findById(userData.id);
 
         const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({...userDto});
+        const tokens = tokenService.generateTokens({ ...userDto });
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
         return { ...tokens, user: userDto }
@@ -104,9 +104,9 @@ class UserService {
 
     async forgotPassword(email) {
         try {
-            const user = await User.findOne({email});
-            if(!user) {
-                throw  ApiError.BadRequest('Пользователь не был найден, проверьте правильность ввода вашего email')
+            const user = await User.findOne({ email });
+            if (!user) {
+                throw ApiError.BadRequest('Пользователь не был найден, проверьте правильность ввода вашего email')
             }
 
             const code = await serviceAll.createCode();
@@ -115,38 +115,44 @@ class UserService {
 
             return code;
 
-        } catch(e) {
+        } catch (e) {
             throw e
         }
     }
 
     async changePasswordForgot(email, password) {
-        
-            const user = await User.findOne({email});
 
-            if(!user) {
-                throw  ApiError.BadRequest('Пользователь не был найден, проверьте правильность ввода вашего email')
-            }
+        const user = await User.findOne({ email });
 
-            const hashPassword = await bcrypt.hash(password, 3);
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь не был найден, проверьте правильность ввода вашего email')
+        }
 
-            user.password = hashPassword;
-            await user.save()
-        
-            return user;
+        const hashPassword = await bcrypt.hash(password, 3);
+
+        user.password = hashPassword;
+        await user.save()
+
+        return user;
     }
 
+    async getUserById(id) {
+        const user = await User.findById(id);
+        return user;
+    }
+
+
     async changePassword(password, newPassword, email) {
-        
+
         try {
-            const user = await User.findOne({email});
-            if(!user) {
-                throw  ApiError.BadRequest('Пользователь не был найден!')
+            const user = await User.findOne({ email });
+            if (!user) {
+                throw ApiError.BadRequest('Пользователь не был найден!')
             }
 
             const isPassEquals = await bcrypt.compare(password, user.password);
-            
-            if(!isPassEquals) {
+
+            if (!isPassEquals) {
                 throw ApiError.BadRequest("Ваш прежний пароль введен неправильно.")
             }
 
@@ -156,26 +162,26 @@ class UserService {
             await user.save();
 
             const userDto = new UserDto(user)
-            const tokens = tokenService.generateTokens({...userDto});
+            const tokens = tokenService.generateTokens({ ...userDto });
             await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    
+
             return { ...tokens, user: userDto }
-        } catch(e) {
+        } catch (e) {
             throw e
         }
 
     }
 
-    async addAvatar(req, file, id){
+    async addAvatar(req, file, id) {
         try {
-            
-            const user = await User.findById({_id: id});
+
+            const user = await User.findById({ _id: id });
 
             const avatarName = uuid.v4() + ".jpg";
 
-            if(user.avatar) {
+            if (user.avatar) {
                 const filePath = path.join(req.pathStatic + "/user", user.avatar);
-                fs.unlinkSync(filePath); 
+                fs.unlinkSync(filePath);
             }
 
             const filePath = path.join(req.pathStatic + "/user", avatarName);
@@ -186,65 +192,65 @@ class UserService {
             await user.save();
 
             const userDto = new UserDto(user)
-            
-            return  userDto;
-        } catch(e){
+
+            return userDto;
+        } catch (e) {
             throw e
         }
     }
 
-    async deleteAvatar (req, id){
+    async deleteAvatar(req, id) {
         try {
-            const user = await User.findById({_id:id}); 
-            
+            const user = await User.findById({ _id: id });
+
             console.log(user)
             if (!user) {
-                throw  ApiError.BadRequest('Пользователь не был найден!')
+                throw ApiError.BadRequest('Пользователь не был найден!')
             }
-            if(!user.avatar) {
-                throw  ApiError.BadRequest('Аватар у пользователя не был найден!')
+            if (!user.avatar) {
+                throw ApiError.BadRequest('Аватар у пользователя не был найден!')
             }
 
             const filePath = path.join(req.pathStatic + "/user", user.avatar);
 
-            fs.unlinkSync(filePath); 
+            fs.unlinkSync(filePath);
 
             user.avatar = "";
             await user.save();
 
             const userDto = new UserDto(user)
-            
+
             return userDto;
 
-        } catch(e) {
+        } catch (e) {
             throw e
-            
+
         }
     }
 
     async userDelete(id, refreshToken) {
         try {
-            const user = await User.findById({_id: id}); 
-            
+            const user = await User.findById({ _id: id });
+
             await tokenService.removeToken(refreshToken);
-            
+
             await User.deleteOne({ _id: id })
-        } catch(e) {
-        }    
+        } catch (e) {
+        }
     }
 
 
     async deleteComment(userId, commentId) {
         try {
-            const user = await User.findOne({_id: userId});
+            const user = await User.findOne({ _id: userId });
             if (!user) {
-                throw  ApiError.BadRequest('Пользователь не был найден!')
-            } 
-            
+                throw ApiError.BadRequest('Пользователь не был найден!')
+            }
+
             user.comments = await user.comments.filter(item => item._id !== commentId);
             await user.save();
-            
-        } catch(e) {
+
+        } catch (e) {
             throw e;
         }
     }

@@ -30,13 +30,15 @@ class TeamService {
     }
 
 
-    async getAll() {
+    async getAll(filter = {}) {
         try {
-            return await Team.find().populate("players game");
+            return await Team.find(filter).populate("players game").lean();
         } catch (e) {
             throw ApiError.BadRequest("Не вдалося отримати всі команди: " + e.message);
         }
     }
+
+
 
     async getById(id) {
         if (!id) {

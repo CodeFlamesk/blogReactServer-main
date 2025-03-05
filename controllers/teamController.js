@@ -13,12 +13,20 @@ class TeamController {
 
     async getAll(req, res, next) {
         try {
-            const teams = await TeamService.getAll();
+            const { game } = req.query;
+
+            let query = {};
+            if (game) {
+                query.game = game; // Фільтр по gameId
+            }
+
+            const teams = await TeamService.getAll(query);
             return res.json(teams);
         } catch (e) {
             next(e);
         }
     }
+
 
     async getById(req, res, next) {
         try {

@@ -12,6 +12,7 @@ router.post("/registration",
 router.post("/login",
     body("email").isEmail(),
     UserController.login);
+router.get("/users/:id", UserController.getUserById);
 
 router.post("/logout", UserController.logout);
 
