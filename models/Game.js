@@ -5,7 +5,7 @@ const gameSchema = new Schema({
     date: { type: String, required: true },
     name: { type: String, required: true },
     map: { type: String, required: true },
-    about: { type: String, required: true },
+    about: { type: String, },
     gameImages: [{ type: String }],
     teams: [{ type: ObjectId, ref: "Team" }],
     votes: { type: ObjectId, ref: "Votes", default: null }
