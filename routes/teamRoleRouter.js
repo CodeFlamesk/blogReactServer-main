@@ -2,12 +2,10 @@ const express = require("express");
 const router = express.Router();
 const TeamRole = require("../models/TeamRole");
 
-// Створення нової ролі для команди
-router.post("/", async (req, res) => {
-    const { role, user, teamId } = req.body; // teamId можна використати для логіки, якщо потрібно
 
+router.post("/", async (req, res) => {
+    const { role, user, teamId } = req.body;
     try {
-        // Створюємо новий документ з gameRole, який містить передані role та user
         const newTeamRole = new TeamRole({
             gameRole: [{ role, user }]
         });
